@@ -1,0 +1,32 @@
+const $=id=>document.getElementById(id);let tab=null,host="";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const special=u=>!u||!/^https?:\/\//i.test(u);
+function panel(n){document.querySelectorAll(".tab").forEach(b=>b.classList.toggle("active",b.dataset.panel===n));document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id===n))}
+function item(title,desc,status="Info",kind=""){return `<div class="item"><div class="itemtop"><span class="itemtitle">${esc(title)}</span><span class="pill ${kind}">${esc(status)}</span></div><div class="desc">${esc(desc)}</div></div>`}
+const empty=t=>`<p class="empty">${esc(t)}</p>`;
+function cookies(url){return new Promise(r=>chrome.cookies.getAll({url,partitionKey:{}},x=>r(chrome.runtime.lastError?[]:(x||[]))))}
+function requests(id){return new Promise(r=>chrome.runtime.sendMessage({type:"getRequests",tabId:id},x=>{void chrome.runtime.lastError;r(x?.records||[])}))}
+function setting(url,key){return new Promise(r=>{try{chrome.contentSettings[key].get({primaryUrl:url},x=>r(chrome.runtime.lastError?"unknown":x?.setting||"unknown"))}catch{r("unknown")}})}
+async function inspect(){
+ const ts=await chrome.tabs.query({active:true,currentWindow:true});tab=ts[0];
+ if(!tab||special(tab.url)){ $("siteName").textContent="This page can't be inspected";$("siteUrl").textContent="Open a regular HTTP or HTTPS website."; $("badge").textContent="Unavailable";$("badge").className="badge warn";["cookieMetric","hostMetric","cookieCount","requestCount"].forEach(x=>$(x).textContent="—");$("signals").innerHTML=item("Restricted page","Chrome does not allow extensions to inspect its internal pages.");$("cookiesList").innerHTML=empty("No website selected.");$("requestsList").innerHTML=empty("No website selected.");$("permissionsList").innerHTML=empty("No website selected.");return}
+ let u;try{u=new URL(tab.url)}catch{return}host=u.hostname;
+ $("siteName").textContent=host;$("siteUrl").textContent=tab.url;$("protocol").textContent=u.protocol.replace(":","").toUpperCase();$("siteNote").textContent="Limited to information Chrome exposes.";
+ let secure=u.protocol==="https:";$("badge").textContent=secure?"HTTPS connection":"Not HTTPS";$("badge").className="badge "+(secure?"":"danger");
+ const [cs,rs]=await Promise.all([cookies(tab.url),requests(tab.id)]),hosts=new Set(rs.map(x=>x.host)),known=new Set(rs.filter(x=>x.known).map(x=>x.host));
+ $("cookieMetric").textContent=cs.length;$("cookieCount").textContent=cs.length;$("hostMetric").textContent=hosts.size;$("requestCount").textContent=rs.length;
+ $("signals").innerHTML=item("Connection",secure?"HTTPS encrypts traffic in transit; it does not prove the site is trustworthy.":"HTTP is not encrypted. Avoid sensitive information.",secure?"HTTPS":"Review",secure?"good":"warn")+item("Third-party hosts",`${hosts.size} external host(s) observed.`,hosts.size?"Observed":"None",hosts.size?"warn":"good")+item("Known tracker matches",`${known.size} hosts matched the local list. Not proof of tracking.`,known.size?"Matches":"No matches",known.size?"warn":"good");
+ $("cookieSummary").textContent=`${cs.length} found`;$("cookiesList").innerHTML=cs.length?cs.slice(0,12).map(c=>item(c.name,`${c.domain} · ${c.secure?"Secure":"Not Secure"} · ${c.httpOnly?"HttpOnly":"JS-readable"} · SameSite ${c.sameSite||"unspecified"}`,c.session?"Session":c.expirationDate?new Date(c.expirationDate*1000).toLocaleDateString():"Persistent",c.secure&&c.httpOnly?"good":"")).join(""):empty("No cookies visible for this URL.");
+ $("requestsList").innerHTML=rs.length?rs.slice().reverse().map(r=>item(r.host,`From ${r.source} · ${r.type}`,r.known?"Tracker-list match":r.type,r.known?"warn":"")).join(""):empty("No third-party requests observed for this page load. Pages restored from history or prerendered are not re-requested, and the extension only sees pages loaded after it was installed. Reload the page to re-scan.");
+ const types=[["Location","location"],["Camera","camera"],["Microphone","microphone"],["Notifications","notifications"],["Cookies","cookies"],["JavaScript","javascript"],["Pop-ups","popups"]];
+ const ss=await Promise.all(types.map(async([n,k])=>[n,await setting(tab.url,k)]));
+ $("permissionsList").innerHTML=ss.map(([n,v])=>item(n,"Current Chrome content setting.",v==="allow"?"Allowed":v==="block"?"Blocked":v==="ask"?"Ask":v,v==="block"?"good":v==="allow"?"warn":"")).join("");
+}
+async function findDashboardTab(base){try{const ctx=await chrome.runtime.getContexts({contextTypes:["TAB"]});const hit=ctx.find(c=>c.documentUrl?.startsWith(base)&&c.tabId>=0);if(hit)return{id:hit.tabId,windowId:hit.windowId}}catch{}try{const tabs=await chrome.tabs.query({url:base+"*"});if(tabs[0])return{id:tabs[0].id,windowId:tabs[0].windowId}}catch{}return null}
+async function openDashboard(section){const base=chrome.runtime.getURL("dashboard.html");const url=base+(section?"#"+section:"");const existing=await findDashboardTab(base);if(existing){await chrome.windows.update(existing.windowId,{focused:true});await chrome.tabs.update(existing.id,{active:true,url});return}chrome.tabs.create({url})}
+document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>panel(b.dataset.panel)));
+$("refresh").addEventListener("click",inspect);$("dashboardBtn").addEventListener("click",()=>openDashboard("overview"));$("manageCookies").addEventListener("click",()=>openDashboard("cookies"));$("managePermissions").addEventListener("click",()=>openDashboard("permissions"));
+$("cleanupBtn").addEventListener("click",()=>{if(confirm("Clear cookies and supported site data for this website? You may be logged out."))chrome.runtime.sendMessage({type:"cleanupCurrentSite",url:tab?.url},r=>{const le=chrome.runtime.lastError?.message;alert(r?.ok?"Site data cleared. Some active page data may remain until reload.":`Cleanup failed: ${r?.error||le||"unknown error"}`);inspect()})});
+$("clearRequests").addEventListener("click",async()=>{if(tab?.id!=null)await new Promise(r=>chrome.runtime.sendMessage({type:"clearRequests",tabId:tab.id},x=>{void chrome.runtime.lastError;r(x)}));inspect()});
+$("openExtensions").addEventListener("click",()=>chrome.tabs.create({url:"chrome://extensions/?id="+chrome.runtime.id}));inspect();
+const versionNode=document.getElementById("versionText");if(versionNode)versionNode.textContent=chrome.runtime.getManifest().version;

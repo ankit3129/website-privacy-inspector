@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Website Privacy Inspector",
+  "version": "2.6.3",
+  "description": "Local-first website privacy inspection, content settings, tracker controls, and best-effort security checks.",
+  "permissions": [
+    "cookies",
+    "storage",
+    "contentSettings",
+    "webRequest",
+    "declarativeNetRequest",
+    "browsingData",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_title": "Website Privacy Inspector",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "options_page": "dashboard.html",
+  "minimum_chrome_version": "121",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
