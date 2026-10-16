@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">Website Privacy Inspector — Dark Icon</title>
+<desc id="desc">Original abstract privacy emblem with a dark shield, cyan globe, and green leaf.</desc>
+<defs>
+<linearGradient id="shield" x1="90" y1="52" x2="420" y2="460" gradientUnits="userSpaceOnUse"><stop stop-color="#182A43"/><stop offset="1" stop-color="#070D18"/></linearGradient>
+<linearGradient id="edge" x1="112" y1="105" x2="400" y2="420" gradientUnits="userSpaceOnUse"><stop stop-color="#45E7F5"/><stop offset=".5" stop-color="#168BFF"/><stop offset="1" stop-color="#38E6B0"/></linearGradient>
+<linearGradient id="globe" x1="163" y1="150" x2="340" y2="350" gradientUnits="userSpaceOnUse"><stop stop-color="#59F2FF"/><stop offset=".55" stop-color="#168BFF"/><stop offset="1" stop-color="#2850A8"/></linearGradient>
+<linearGradient id="leaf" x1="283" y1="220" x2="377" y2="355" gradientUnits="userSpaceOnUse"><stop stop-color="#B6FF9A"/><stop offset=".55" stop-color="#45E68A"/><stop offset="1" stop-color="#00AFA0"/></linearGradient>
+<radialGradient id="halo" cx="0" cy="0" r="1" gradientTransform="matrix(0 214 -214 0 256 252)" gradientUnits="userSpaceOnUse"><stop stop-color="#073E58" stop-opacity=".6"/><stop offset="1" stop-color="#02050A" stop-opacity="0"/></radialGradient>
+<filter id="glow" x="20" y="20" width="472" height="472"><feGaussianBlur stdDeviation="8"/></filter>
+<clipPath id="globeClip"><circle cx="231" cy="235" r="91"/></clipPath>
+</defs>
+<rect width="512" height="512" rx="112" fill="#050912"/><circle cx="256" cy="256" r="220" fill="url(#halo)"/>
+<path d="M256 48 408 106v119c0 101-61 177-152 224-91-47-152-123-152-224V106L256 48Z" fill="url(#edge)" opacity=".3" filter="url(#glow)"/>
+<path d="M256 50 405 108v116c0 99-59 173-149 219-90-46-149-120-149-219V108L256 50Z" fill="url(#shield)" stroke="url(#edge)" stroke-width="7" stroke-linejoin="round"/>
+<path d="M256 75 382 124v99c0 81-47 146-126 189-79-43-126-108-126-189v-99L256 75Z" fill="none" stroke="#5BD9F1" stroke-opacity=".19" stroke-width="2"/>
+<circle cx="231" cy="235" r="98" fill="#061528" stroke="#0D395C" stroke-width="3"/><circle cx="231" cy="235" r="91" fill="url(#globe)"/>
+<g clip-path="url(#globeClip)" fill="none" stroke="#B9F7FF" stroke-linecap="round" stroke-width="5" opacity=".9"><ellipse cx="231" cy="235" rx="39" ry="91"/><ellipse cx="231" cy="235" rx="73" ry="91"/><path d="M140 235h182M151 196c49 20 111 20 160 0M151 274c49-20 111-20 160 0M231 144v182"/></g>
+<path d="M161 201c16-27 42-44 70-49-1 24-8 42-24 57-15 14-30 18-46 14" fill="#E6FCFF" opacity=".18"/>
+<path d="M145 303c58-12 117-42 166-82 20-16 36-34 48-54" fill="none" stroke="url(#edge)" stroke-width="7" stroke-linecap="round"/>
+<path d="M269 333c-4-39 11-75 43-102 24-20 54-29 91-28-2 42-17 76-48 100-25 19-54 29-86 30Z" fill="url(#leaf)" stroke="#B6FFD7" stroke-opacity=".9" stroke-width="3" stroke-linejoin="round"/>
+<path d="M270 332c32-37 70-73 117-111" fill="none" stroke="#073D3A" stroke-width="5" stroke-linecap="round"/><path d="M310 287l-2-27M342 258l-2-25" fill="none" stroke="#0A685B" stroke-width="4" stroke-linecap="round" opacity=".8"/>
+<circle cx="372" cy="155" r="5" fill="#59F2FF"/><circle cx="389" cy="176" r="3.5" fill="#46E9BC"/><circle cx="363" cy="183" r="3" fill="#59F2FF" opacity=".8"/>
+</svg>
