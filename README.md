@@ -18,10 +18,11 @@ A free, local-first Chrome extension for inspecting website privacy signals, man
 ## Install from source
 
 1. Download or clone this repository.
-2. Open `chrome://extensions` in Chrome.
-3. Enable **Developer mode**.
-4. Select **Load unpacked** and choose the repository folder containing `manifest.json`.
-5. Open a regular HTTPS website, reload it, then open the extension.
+2. Extract the zip file if you have downloaded.
+3. Open `chrome://extensions` in Chrome.
+4. Enable **Developer mode**.
+5. Select **Load unpacked** and choose the repository folder containing `manifest.json`.
+6. Open a regular HTTPS website, reload it, then open the extension.
 
 ## Permissions and privacy
 
